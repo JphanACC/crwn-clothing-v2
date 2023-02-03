@@ -20,15 +20,19 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 //For Google Authnetication to work.
 //GoogleAuthProvider is a class we get from Firebase Authentication
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
+//this auth is BEING TRACKED for entire of our application
 export const auth = getAuth();
-export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
+export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);
+
 //create singleton instance that connects to Firebase database
 export const db = getFirestore();
+
 export const createUserDocumentFromAuth = async (userAuth) => {
     //check if there is document reference
     //takes 3 arguments: the doc takes db instance, collection name, some identifer
