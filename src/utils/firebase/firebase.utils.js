@@ -1,18 +1,18 @@
 //initialize app creates app instance based off of some type of config
 import { initializeApp } from "firebase/app";
 //auth service
-import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
 //import Database stores
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBLJFXsVbQVqWIEEHFrOAnMppcwfikEyJw",
-  authDomain: "crown-clothing-db-aa799.firebaseapp.com",
-  projectId: "crown-clothing-db-aa799",
-  storageBucket: "crown-clothing-db-aa799.appspot.com",
-  messagingSenderId: "127143358766",
-  appId: "1:127143358766:web:de2707d60942337eca0abf",
+    apiKey: "AIzaSyBLJFXsVbQVqWIEEHFrOAnMppcwfikEyJw",
+    authDomain: "crown-clothing-db-aa799.firebaseapp.com",
+    projectId: "crown-clothing-db-aa799",
+    storageBucket: "crown-clothing-db-aa799.appspot.com",
+    messagingSenderId: "127143358766",
+    appId: "1:127143358766:web:de2707d60942337eca0abf",
 };
 
 // Initialize Firebase
@@ -22,26 +22,34 @@ const firebaseApp = initializeApp(firebaseConfig);
 //GoogleAuthProvider is a class we get from Firebase Authentication
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
-  prompt: "select_account",
+    prompt: "select_account",
 });
 
 //this auth is BEING TRACKED for entire of our application
 export const auth = getAuth();
-export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
-export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);
-
 //create singleton instance that connects to Firebase database
 export const db = getFirestore();
 
-export const createUserDocumentFromAuth = async (userAuth) => {
+//NOTE implement login wiht Google Authentications
+export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
+export const signInWithGoogleRedirect = () => signInWithRedirect(auth, googleProvider);
+
+//NOTE User with Email and Password
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+    if (!email || !password) return;
+
+    return await createUserWithEmailAndPassword(auth, email, password);
+}
+
+//NOTE User Model Document Object template
+export const createUserDocumentFromAuth = async (userAuth, additionalInformation) => {
+    if (!userAuth) return;
+
     //check if there is document reference
     //takes 3 arguments: the doc takes db instance, collection name, some identifer
     const userDocRef = doc(db, "users", userAuth.uid);
-
-    console.log(userDocRef);
+    //create snapshot
     const userSnapshot = await getDoc(userDocRef);
-    console.log(userSnapshot);
-    console.log(userSnapshot.exists());
 
     //if user data does not exist
     //if user data exists
@@ -54,7 +62,8 @@ export const createUserDocumentFromAuth = async (userAuth) => {
             await setDoc(userDocRef, {
                 displayName,
                 email,
-                createdAt
+                createdAt,
+                ...additionalInformation,
             });
         } catch (err) {
             console.log('error creating the user', err.message)
