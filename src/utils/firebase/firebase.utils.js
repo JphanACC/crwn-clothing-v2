@@ -1,7 +1,14 @@
 //initialize app creates app instance based off of some type of config
 import { initializeApp } from "firebase/app";
 //auth service
-import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
+import { 
+    getAuth, 
+    signInWithRedirect, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword 
+} from "firebase/auth";
 //import Database stores
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -39,6 +46,11 @@ export const createAuthUserWithEmailAndPassword = async (email, password) => {
     if (!email || !password) return;
 
     return await createUserWithEmailAndPassword(auth, email, password);
+}
+export const signInAuthUserWithEmailAndPassword = async (email, password) => {
+    if (!email || !password) return;
+
+    return await signInWithEmailAndPassword(auth, email, password);
 }
 
 //NOTE User Model Document Object template
