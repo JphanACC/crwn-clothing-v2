@@ -7,7 +7,9 @@ import {
     signInWithPopup, 
     GoogleAuthProvider, 
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword 
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
 } from "firebase/auth";
 //import Database stores
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
@@ -53,6 +55,11 @@ export const signInAuthUserWithEmailAndPassword = async (email, password) => {
     return await signInWithEmailAndPassword(auth, email, password);
 }
 
+//NOTE Sign Out
+export const signOutUser = async () => {
+    await signOut(auth);
+}
+
 //NOTE User Model Document Object template
 export const createUserDocumentFromAuth = async (userAuth, additionalInformation) => {
     if (!userAuth) return;
@@ -84,3 +91,9 @@ export const createUserDocumentFromAuth = async (userAuth, additionalInformation
 
     return userDocRef;
 };
+
+//Auth state change
+export const onAuthStateChangedListener = (callback) => {
+
+    onAuthStateChanged(auth, callback);
+}
