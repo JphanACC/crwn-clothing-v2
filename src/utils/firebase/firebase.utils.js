@@ -9,10 +9,18 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    
 } from "firebase/auth";
-//import Database stores
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+//import Database stores and their methods
+import { 
+    getFirestore, 
+    doc, 
+    getDoc, 
+    setDoc, 
+    collection,
+    writeBatch,
+} from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -38,6 +46,24 @@ googleProvider.setCustomParameters({
 export const auth = getAuth();
 //create singleton instance that connects to Firebase database
 export const db = getFirestore();
+
+//NOTE Add Collection and Document
+export const addCollectionAndDocument = async (collectionKey, objectsToAdd) => {
+    //this access the db instance (Firestore) with collection Key.
+    const collectionRef = collection(db, collectionKey);
+    //writebatch returns a batch
+    const batch = writeBatch(db);
+
+    //in every object we added from parameter.
+    objectsToAdd.forEach((object)=> {
+        //collectionsRef tells the doc method to know which database it will be using. 
+        const docRef = doc(collectionRef, object.title.toLowerCase());
+        batch.set(docRef, object)
+    })
+
+    await batch.commit();
+    console.log("batch commit done.")
+}   
 
 //NOTE implement login wiht Google Authentications
 export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
