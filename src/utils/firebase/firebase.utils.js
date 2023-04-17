@@ -20,6 +20,8 @@ import {
     setDoc, 
     collection,
     writeBatch,
+    query,
+    getDocs,
 } from "firebase/firestore";
 
 // Your web app's Firebase configuration
@@ -48,13 +50,17 @@ export const auth = getAuth();
 export const db = getFirestore();
 
 //NOTE Add Collection and Document
-export const addCollectionAndDocument = async (collectionKey, objectsToAdd) => {
+export const addCollectionAndDocument = async (
+    //EX: 'categories'
+    collectionKey, 
+    //EX: SHOP_DATA.JSON or actual data.
+    objectsToAdd) => {
     //this access the db instance (Firestore) with collection Key.
     const collectionRef = collection(db, collectionKey);
     //writebatch returns a batch
     const batch = writeBatch(db);
 
-    //in every object we added from parameter.
+    //in every object we added from parameter objectsToAdd
     objectsToAdd.forEach((object)=> {
         //collectionsRef tells the doc method to know which database it will be using. 
         const docRef = doc(collectionRef, object.title.toLowerCase());
@@ -64,6 +70,31 @@ export const addCollectionAndDocument = async (collectionKey, objectsToAdd) => {
     await batch.commit();
     console.log("batch commit done.")
 }   
+
+//NOTE Fetch/Grab/GET Categories and Document
+export const getCategoriesAndDocuments = async () => {
+    const collectionRef = collection(db, 'categories');
+    const q = query(collectionRef);
+
+    //use the query to get a snapshot of the categories
+    const querySnapshot = await getDocs(q);
+    //we reduce the snapshot into a map. 
+    //1st argument invokes on each document snapshot, 
+    //2nd is final object, which should be an empty object when we initialize.
+    const categoryMap = querySnapshot.docs.reduce(
+        (
+            //1st argument is accumulator
+            acc,
+            docSnapshot
+        ) => { 
+            //destructure the value of the data by using extracting data method of snapshot
+            const { title, items } = docSnapshot.data();
+            acc[title.toLowerCase()] = items;
+            return acc;
+        }, { }
+    )
+    return categoryMap;
+}
 
 //NOTE implement login wiht Google Authentications
 export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
