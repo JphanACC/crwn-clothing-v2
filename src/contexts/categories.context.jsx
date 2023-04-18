@@ -6,14 +6,14 @@ import SHOP_DATA from '../utils/shop-data.js'
 //replace addCollection with getCollection so we can grab the data from Firestore instead
 import { getCategoriesAndDocuments } from '../utils/firebase/firebase.utils.js';
 
-export const ProductsContext = createContext({
-    products: [],
-    setProducts: () => { },
+export const CategoriesContext = createContext({
+    categoriesMap: {},
+    //setProducts: () => { },
 })
 
-export const ProductsProvider = ({ children }) => {
-    const [products, setProducts] = useState([]);
-    const value = { products }
+export const CategoriesProvider = ({ children }) => {
+    const [categoriesMap, setCategoriesMap] = useState({});
+    const value = { categoriesMap };
 
     //automatically pass the SHOP_DATA as actual objects we are trying to add 
     //NOTE THIS IS ONE TIME EXAMPLE.
@@ -23,14 +23,17 @@ export const ProductsProvider = ({ children }) => {
 
     useEffect(() => {
         //NOTE Better to make a separate async function instead of using Async in useEffect. Then invoke it.
-        const getCategoriesMap = async()=> {
+        const getCategoriesMap = async () => {
             const categoryMap = await getCategoriesAndDocuments();
             console.log(categoryMap);
+            setCategoriesMap(categoryMap);
         }
         getCategoriesMap();
     }, []);
-
-    return <ProductsContext.Provider value={value}> 
-        {children} 
-    </ProductsContext.Provider>
+    
+    return (
+        <CategoriesContext.Provider value={value}> 
+            {children} 
+        </CategoriesContext.Provider>
+    );
 }
