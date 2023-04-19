@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import Button from "../../components/button/button.component";
+import Button, { BUTTON_TYPE_CLASSES } from "../../components/button/button.component";
 import FormInput from "../../components/form-input/form-input.component";
 import './sign-in-form.styles.scss';
 
@@ -41,10 +41,10 @@ const SignInForm = () => {
 
         try {
             const response = await signInAuthUserWithEmailAndPassword(email, password);
-            const {user} = response;
+            const { user } = response;
             resetFormFields();
         } catch (err) {
-            switch(err.code ){
+            switch (err.code) {
                 case "auth/user-not-found":
                     alert(errorMessage.noUser);
                     break;
@@ -91,7 +91,7 @@ const SignInForm = () => {
                 />
                 <div id="sas" className="buttons-container">
                     <Button type="submit" >Sign In</Button>
-                    <Button buttonType='google' onClick={signInWithGoogle} >Google Sign In</Button>
+                    <Button buttonType={BUTTON_TYPE_CLASSES.google} onClick={signInWithGoogle} >Google Sign In</Button>
                 </div>
             </form>
         </div>
