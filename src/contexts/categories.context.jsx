@@ -25,15 +25,14 @@ export const CategoriesProvider = ({ children }) => {
         //NOTE Better to make a separate async function instead of using Async in useEffect. Then invoke it.
         const getCategoriesMap = async () => {
             const categoryMap = await getCategoriesAndDocuments();
-            console.log(categoryMap);
             setCategoriesMap(categoryMap);
         }
         getCategoriesMap();
     }, []);
-    
+
     return (
-        <CategoriesContext.Provider value={value}> 
-            {children} 
+        <CategoriesContext.Provider value={value}>
+            {children}
         </CategoriesContext.Provider>
     );
 }
